@@ -59,7 +59,7 @@ def _to_record(pkt: Packet) -> PacketRecord | None:
     )
 
 
-def capture(interface: str, duration: int = 30) -> Iterator[PacketRecord]:
+def capture(interface: str | None, duration: int = 30) -> Iterator[PacketRecord]:
     """Capture packets on `interface` for `duration` seconds.
 
     Yields PacketRecord instances. Requires elevated privileges
@@ -73,6 +73,9 @@ def capture(interface: str, duration: int = 30) -> Iterator[PacketRecord]:
 
 
 if __name__ == "__main__":
-    # Quick manual smoke test: `python -m sentrynet.capture.sniffer`
-    for rec in capture(interface="en0", duration=5):
+    # Quick smoke test: `sudo python -m sentrynet.capture.sniffer <interface>`
+    import sys
+
+    iface = sys.argv[1] if len(sys.argv) > 1 else None
+    for rec in capture(interface=iface, duration=5):
         print(rec)
