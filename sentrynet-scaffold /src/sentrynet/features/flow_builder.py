@@ -66,7 +66,7 @@ def build_flows(records: Iterable[PacketRecord]) -> pd.DataFrame:
 
     flows = []
     for (window, src, dst), group in df.groupby(["window", "src_ip", "dst_ip"]):
-        ports = [p for p in group["dst_port"].tolist() if p is not None]
+        ports = [int(p) for p in group["dst_port"].dropna()]
         flows.append(
             {
                 "window": window,
