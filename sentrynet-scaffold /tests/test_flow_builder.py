@@ -35,6 +35,9 @@ def test_build_flows_aggregates_same_window_and_pair():
     assert row["avg_packet_size"] == 150.0
     assert row["syn_count"] == 1
     assert row["ack_count"] == 1
+    assert row["byte_rate"] == 60.0  # 300 bytes / 5 second window
+    assert row["connection_rate"] == 0.2  # 1 SYN / 5 seconds
+    assert row["syn_ack_ratio"] == 1.0
 
 
 def test_build_flows_separates_different_windows():
@@ -54,3 +57,17 @@ def test_build_flows_port_scan_has_high_entropy():
     df = build_flows(records)
     assert len(df) == 1
     assert df.iloc[0]["dst_port_entropy"] > 3.0  # spread across many ports
+
+
+def test_build_flows_syn_flood_has_high_connection_rate_and_ratio():
+    records = [
+        _rec(t=i * 0.05, src="10.0.0.9", dst="10.0.0.2", port=80, size=60, flags="S")
+        for i in range(50)
+    ]
+    df = build_flows(records)
+    assert len(df) == 1
+    row = df.iloc[0]
+    assert row["syn_count"] == 50
+    assert row["ack_count"] == 0
+    assert row["connection_rate"] == 10.0  # 50 SYNs / 5 seconds
+    assert row["syn_ack_ratio"] == 50.0  # no ACKs, so divide by 1
