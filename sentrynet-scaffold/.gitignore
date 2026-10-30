@@ -26,3 +26,6 @@ data/*.csv
 .vscode/
 .idea/
 .DS_Store
+
+# Trained models (depend on your own baseline traffic)
+data/*.joblib
