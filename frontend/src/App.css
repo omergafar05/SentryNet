@@ -504,4 +504,74 @@ h3 {
   .search-field input {
     width: 100%;
   }
+
+  /* Space between the chart and the traffic table below it. */
+} /* End the mobile-only rules. Chart styles below apply at every size. */
+
+/* Leave space between the chart and the traffic table. */
+.traffic-chart {
+  margin-bottom: 24px;
 }
+
+/* Let the chart scroll horizontally on smaller screens. */
+.chart-scroll {
+  overflow-x: auto;
+}
+
+/* Match className="traffic-bars" in TrafficChart.jsx.
+   Create one equally sized column for each measurement. */
+.traffic-bars {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(65px, 1fr);
+  gap: 20px;
+  margin: 0;
+  padding: 36px 24px 24px;
+
+  /* Remove the default numbers from the ordered list. */
+  list-style: none;
+}
+
+.chart-column {
+  text-align: center;
+}
+
+/* Give every bar the same available height and zero baseline.
+   "position: relative" anchors the count label inside this track. */
+.chart-track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  height: 180px;
+  background: #0d1625;
+  border-bottom: 1px solid #41516a;
+  border-radius: 6px 6px 0 0;
+}
+
+/* Position the count above the track so it doesn't compete
+   with the bar for horizontal space. */
+.chart-value {
+  position: absolute;
+  top: -25px;
+  left: 0;
+  width: 100%;
+  color: #dce7f5;
+  font-size: 13px;
+}
+
+/* React calculates each bar's height from its packet count. */
+.chart-bar {
+  width: 100%;
+  background: linear-gradient(to top, #168b88, #5eead4);
+  border-radius: 5px 5px 0 0;
+}
+
+/* Display the time beneath each bar. */
+.chart-time {
+  display: block;
+  margin-top: 12px;
+  color: #9cacc3;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+}
+

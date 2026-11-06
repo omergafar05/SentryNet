@@ -2,8 +2,11 @@
 // React's hook for remembering values that change during interaction.
 import { useState } from "react";
 
-// Load our sample traffic and alerts from the separate data file.
-import { flows, alerts } from "./data/mockData";
+// Import the sample data used by the table, alerts, and chart.
+import { flows, alerts, trafficHistory } from "./data/mockData";
+
+// Import the reusable chart component.
+import TrafficChart from "./components/TrafficChart";
 
 // Apply the dashboard styles.
 import "./App.css";
@@ -110,6 +113,10 @@ export default function App() {
             </article>
           </section>
         )}
+
+        {/* Display the chart only on Overview.
+    Pass trafficHistory into the component through its "data" prop. */}
+        {page === "Overview" && <TrafficChart data={trafficHistory} />}
 
         {(page === "Overview" || page === "Traffic") && (
           <section className="panel traffic-panel">
