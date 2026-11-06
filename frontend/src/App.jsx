@@ -1,70 +1,12 @@
+
+// React's hook for remembering values that change during interaction.
 import { useState } from "react";
+
+// Load our sample traffic and alerts from the separate data file.
+import { flows, alerts } from "./data/mockData";
+
+// Apply the dashboard styles.
 import "./App.css";
-
-const flows = [
-  {
-    id: 1,
-    src_ip: "192.0.2.10",
-    dst_ip: "198.51.100.20",
-    packet_count: 312,
-    total_bytes: 221000,
-    avg_packet_size: 708.3,
-  },
-  {
-    id: 2,
-    src_ip: "203.0.113.15",
-    dst_ip: "192.0.2.10",
-    packet_count: 148,
-    total_bytes: 98000,
-    avg_packet_size: 662.2,
-  },
-  {
-    id: 3,
-    src_ip: "192.0.2.10",
-    dst_ip: "203.0.113.15",
-    packet_count: 64,
-    total_bytes: 6272,
-    avg_packet_size: 98,
-  },
-  {
-    id: 4,
-    src_ip: "198.51.100.20",
-    dst_ip: "192.0.2.10",
-    packet_count: 420,
-    total_bytes: 310000,
-    avg_packet_size: 738.1,
-  },
-];
-
-const alerts = [
-  {
-    id: 1,
-    severity: "High",
-    title: "Unusual port activity",
-    source: "192.0.2.10",
-    detail: "24 destination ports contacted within five seconds.",
-    explanation:
-      "This example shows activity worth investigating. Multiple destination ports alone do not prove an attack.",
-  },
-  {
-    id: 2,
-    severity: "Medium",
-    title: "Traffic spike",
-    source: "198.51.100.20",
-    detail: "Traffic volume increased above the sample baseline.",
-    explanation:
-      "A large download or software update could explain this increase. Review the activity before drawing conclusions.",
-  },
-  {
-    id: 3,
-    severity: "Low",
-    title: "New connection",
-    source: "203.0.113.15",
-    detail: "A connection to a previously unseen address was recorded.",
-    explanation:
-      "New connections are common during normal browsing. This example is informational.",
-  },
-];
 
 function formatBytes(bytes) {
   if (bytes >= 1000000) return `${(bytes / 1000000).toFixed(2)} MB`;
