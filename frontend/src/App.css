@@ -668,3 +668,29 @@ main,
   color: #9cacc3;
   font-size: 12px;
 }
+
+/* Align the reset button with the dropdowns.
+   The existing flex layout allows it to wrap on narrow screens. */
+.clear-filters-button {
+  align-self: flex-end;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #34445e;
+  border-radius: 8px;
+  background: #0d1625;
+  color: #e7edf7;
+  font: inherit;
+  font-size: 12px;
+}
+
+/* Highlight the button only when it can be used. */
+.clear-filters-button:hover:not(:disabled) {
+  background: #19273b;
+  border-color: #5eead4;
+}
+
+/* Visually indicate that there are no active filters to clear. */
+.clear-filters-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

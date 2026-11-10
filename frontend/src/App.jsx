@@ -247,6 +247,20 @@ export default function App() {
                       <option value="Reviewed">Reviewed</option>
                     </select>
                   </label>
+                                        {/* Reset both dropdowns without changing reviewed alerts. */}
+                  <button
+                    type="button"
+                    className="clear-filters-button"
+                    onClick={() => {
+                      setSeverityFilter("All");
+                      setReviewFilter("All");
+                    }}
+                    disabled={
+                      severityFilter === "All" && reviewFilter === "All"
+                    }
+                  >
+                    Clear filters
+                  </button>
                 </div>
               )}
 
