@@ -575,3 +575,51 @@ h3 {
   font-size: 11px;
 }
 
+/* Allow grid and flex children to shrink to fit the screen.
+   Wide tables and charts can then scroll inside their own panels. */
+main,
+.panel,
+.stat-card,
+.alert-copy {
+  min-width: 0;
+}
+
+/* Let long alert text wrap instead of stretching the layout. */
+.alert-copy,
+.detail-description,
+.explanation {
+  overflow-wrap: anywhere;
+}
+
+/* Apply these adjustments only on narrow phone screens. */
+@media (max-width: 480px) {
+  /* Stack summary cards so their values remain easy to read. */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Reduce spacing inside panel headings on small screens. */
+  .panel-header {
+    padding: 18px;
+  }
+
+  /* Give navigation buttons enough height for tapping. */
+  .nav-button {
+    min-height: 44px;
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  /* Let the source address move onto another line if needed. */
+  .detail-source {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Keep chart bars readable while reducing the space between them. */
+  .traffic-bars {
+    gap: 12px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+}
