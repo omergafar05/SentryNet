@@ -19,7 +19,12 @@ function formatBytes(bytes) {
 export default function App() {
   const [page, setPage] = useState("Overview");
   const [search, setSearch] = useState("");
-  const [selectedAlert, setSelectedAlert] = useState(alerts[0]);
+    // Remember the selected alert by its unique ID.
+  const [selectedAlertId, setSelectedAlertId] = useState(alerts[0]?.id);
+
+  // "All" means that this filter does not restrict the results.
+  const [severityFilter, setSeverityFilter] = useState("All");
+  const [reviewFilter, setReviewFilter] = useState("All");
   const [reviewed, setReviewed] = useState([]);
 
   const totalPackets = flows.reduce(
@@ -34,7 +39,35 @@ export default function App() {
     `${flow.src_ip} ${flow.dst_ip}`.includes(search.trim()),
   );
 
+    // On Overview, show all alerts. On Alerts, apply both filters.
+  const filteredAlerts = alerts.filter((alert) => {
+    if (page !== "Alerts") return true;
+
+    const isReviewed = reviewed.includes(alert.id);
+
+    const matchesSeverity =
+      severityFilter === "All" || alert.severity === severityFilter;
+
+    const matchesReview =
+      reviewFilter === "All" ||
+      (reviewFilter === "Reviewed" && isReviewed) ||
+      (reviewFilter === "Unreviewed" && !isReviewed);
+
+    // An alert must satisfy both filters to appear.
+    return matchesSeverity && matchesReview;
+  });
+
+  // Keep the selected alert if it is visible.
+  // Otherwise, display the first matching alert.
+  // If the list is empty, selectedAlert will be undefined.
+  const selectedAlert =
+    filteredAlerts.find((alert) => alert.id === selectedAlertId) ??
+    filteredAlerts[0];
+
   function markReviewed() {
+    // There is nothing to review when no alerts match.
+    if (!selectedAlert) return;
+
     setReviewed((current) =>
       current.includes(selectedAlert.id)
         ? current
@@ -183,15 +216,54 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Filters appear only on the dedicated Alerts page. */}
+              {page === "Alerts" && (
+                <div className="alert-filters">
+                  <label className="filter-field">
+                    <span>Severity</span>
+                    <select
+                      value={severityFilter}
+                      onChange={(event) =>
+                        setSeverityFilter(event.target.value)
+                      }
+                    >
+                      <option value="All">All severities</option>
+                      <option value="High">High</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Low">Low</option>
+                    </select>
+                  </label>
+
+                  <label className="filter-field">
+                    <span>Review status</span>
+                    <select
+                      value={reviewFilter}
+                      onChange={(event) =>
+                        setReviewFilter(event.target.value)
+                      }
+                    >
+                      <option value="All">All statuses</option>
+                      <option value="Unreviewed">Unreviewed</option>
+                      <option value="Reviewed">Reviewed</option>
+                    </select>
+                  </label>
+                </div>
+              )}
+
+              {/* Announce the result count when filtering changes it. */}
+              <p className="alert-results" role="status">
+                Showing {filteredAlerts.length} of {alerts.length} sample alerts
+              </p>
+
               <div className="alert-list">
-                {alerts.map((alert) => (
+                {filteredAlerts.map((alert) => (
                   <button
                     key={alert.id}
                     className={`alert-row ${
-                      selectedAlert.id === alert.id ? "selected" : ""
+                      selectedAlert?.id === alert.id ? "selected" : ""
                     }`}
-                    aria-pressed={selectedAlert.id === alert.id}
-                    onClick={() => setSelectedAlert(alert)}
+                    aria-pressed={selectedAlert?.id === alert.id}
+                    onClick={() => setSelectedAlertId(alert.id)}
                   >
                     <span
                       className={`severity ${alert.severity.toLowerCase()}`}
@@ -209,43 +281,66 @@ export default function App() {
                     <span aria-hidden="true">→</span>
                   </button>
                 ))}
+
+                {/* An empty result is valid, so explain it clearly. */}
+                {filteredAlerts.length === 0 && (
+                  <p className="empty-state">
+                    No alerts match these filters. Try another severity or
+                    review status.
+                  </p>
+                )}
               </div>
             </section>
 
             <section className="panel details-panel">
-              <div className="panel-header">
-                <h2>Alert details</h2>
-                <span
-                  className={`severity ${selectedAlert.severity.toLowerCase()}`}
-                >
-                  {selectedAlert.severity}
-                </span>
-              </div>
-              <h3>{selectedAlert.title}</h3>
-              <p className="detail-source">
-                Source <span>{selectedAlert.source}</span>
-              </p>
-              <p className="detail-description">{selectedAlert.detail}</p>
+              {/* Only read alert fields when a matching alert exists. */}
+              {selectedAlert ? (
+                <>
+                  <div className="panel-header">
+                    <h2>Alert details</h2>
+                    <span
+                      className={`severity ${selectedAlert.severity.toLowerCase()}`}
+                    >
+                      {selectedAlert.severity}
+                    </span>
+                  </div>
 
-              <div className="explanation">
-                <strong>Example explanation</strong>
-                <p>{selectedAlert.explanation}</p>
-                <small>Static demo text · Not AI-generated analysis</small>
-              </div>
+                  <h3>{selectedAlert.title}</h3>
+                  <p className="detail-source">
+                    Source <span>{selectedAlert.source}</span>
+                  </p>
+                  <p className="detail-description">
+                    {selectedAlert.detail}
+                  </p>
 
-              <button
-                className="review-button"
-                onClick={markReviewed}
-                disabled={reviewed.includes(selectedAlert.id)}
-              >
-                {reviewed.includes(selectedAlert.id)
-                  ? "Reviewed"
-                  : "Mark reviewed"}
-              </button>
+                  <div className="explanation">
+                    <strong>Example explanation</strong>
+                    <p>{selectedAlert.explanation}</p>
+                    <small>Static demo text · Not AI-generated analysis</small>
+                  </div>
+
+                  <button
+                    className="review-button"
+                    onClick={markReviewed}
+                    disabled={reviewed.includes(selectedAlert.id)}
+                  >
+                    {reviewed.includes(selectedAlert.id)
+                      ? "Reviewed"
+                      : "Mark reviewed"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="panel-header">
+                    <h2>Alert details</h2>
+                  </div>
+                  <p className="empty-state">No matching alert to display.</p>
+                </>
+              )}
             </section>
           </div>
         )}
-
+        {/* Remind users that the dashboard currently uses sample data. */}
         <footer className="page-footer">
           SentryNet · Demo data only · Review status resets on page reload
         </footer>

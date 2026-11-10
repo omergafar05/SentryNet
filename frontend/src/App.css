@@ -623,3 +623,48 @@ main,
     padding-left: 18px;
   }
 }
+/* Place filters side by side when there is room.
+   Allow them to wrap onto separate rows on smaller screens. */
+.alert-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 23px 16px;
+}
+
+/* Keep each label above its dropdown. */
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 150px;
+  min-width: 0;
+  gap: 8px;
+  color: #9cacc3;
+  font-size: 12px;
+}
+
+/* Match the dropdowns to the dashboard's dark theme. */
+.filter-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #34445e;
+  border-radius: 8px;
+  background: #0d1625;
+  color: #e7edf7;
+  font: inherit;
+  color-scheme: dark;
+}
+
+/* Make keyboard focus visible on dropdowns. */
+.filter-field select:focus-visible {
+  outline: 2px solid #5eead4;
+  outline-offset: 4px;
+}
+
+/* Display the matching result count above the alert list. */
+.alert-results {
+  padding: 0 23px 16px;
+  color: #9cacc3;
+  font-size: 12px;
+}
